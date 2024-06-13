@@ -20,12 +20,21 @@ class ReservationsController extends Controller
         return view('reservations.index', compact('reservations', 'rooms', 'users'));
     }
 
+    public function userIndex()
+    {   $users = User::all();
+        $rooms = Rooms::all();
+        $reservations = Reservations::all();
+
+        return view('reservations.userIndex', compact('reservations', 'rooms', 'users'));
+    }
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        return view('reservations.create');
+    public function create($id)
+    {   
+        $room = Rooms::find($id);
+        $dates = Reservations::select('start_date', 'end_date')->get();
+        return view('reservations.create', ['dates' => $dates, 'room' => $room]);
     }
 
     /**
@@ -89,8 +98,11 @@ class ReservationsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Reservations $reservations)
+    public function destroy(Reservations $reservation)
     {
-        //
+
+        $reservation->delete();
+
+        return redirect()->route('reservations.index');
     }
 }

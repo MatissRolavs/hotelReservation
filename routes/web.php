@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/room-pictures', [RoomPicturesController::class, 'index'])->name('room_pictures.index');
+    Route::post('/room-pictures', [RoomPicturesController::class, 'store'])->name('room_pictures.store');
 
     Route::get('/rooms', [RoomsController::class, 'index'])->name('rooms.index');
     Route::get('/rooms/create', [RoomsController::class, 'create'])->name('rooms.create');
@@ -32,7 +33,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/reservations/create/{room}', [ReservationsController::class, 'create'])->name('reservations.create');
     Route::post('/reservations', [ReservationsController::class, 'store'])->name('reservations.store');
     Route::get('/reservations', [ReservationsController::class, 'index'])->name('reservations.index');
+    Route::delete('/reservations/{reservation}', [ReservationsController::class, 'destroy'])->name('reservations.destroy');
+    Route::get('/reservations/userIndex', [ReservationsController::class, 'userIndex'])->name('reservations.userIndex');
+   
+    Route::get('/search', [RoomsController::class, 'search'])->name('search');
+});
 
+Route::middleware('auth',"admin")->group(function () {
+    
 });
 
 require __DIR__.'/auth.php';

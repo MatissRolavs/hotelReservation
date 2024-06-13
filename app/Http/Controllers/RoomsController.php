@@ -6,13 +6,15 @@ use App\Http\Requests\StoreRoomsRequest;
 use App\Http\Requests\UpdateRoomsRequest;
 use App\Models\Rooms;
 use App\Models\Room_pictures;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 class RoomsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
+    {   
         $rooms = Rooms::all();
 
         return view('rooms.index', compact('rooms'));
@@ -67,7 +69,7 @@ class RoomsController extends Controller
     public function update(UpdateRoomsRequest $request, Rooms $room)
     {
         $room->update($request->only(['number', 'description', 'price', 'available', 'img_path']));
-        return redirect()->route('rooms.index');
+        return redirect()->route('rooms.show', ['room' => $room->id]);
     }
    
     /**
@@ -77,5 +79,17 @@ class RoomsController extends Controller
     {
         $room->delete();
         return redirect()->route('rooms.index');
+    }
+    
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $rooms = Rooms::query()
+            ->where('number', 'LIKE', "%{$search}%")
+            ->orWhere('description', 'LIKE', "%{$search}%")
+            ->get();
+
+        return view('rooms.index', compact('rooms'));
     }
 }

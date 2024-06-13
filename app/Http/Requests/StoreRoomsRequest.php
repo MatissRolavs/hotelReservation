@@ -23,7 +23,7 @@ class StoreRoomsRequest extends FormRequest
     {
         return [
             'number' => ['required', 'integer', 'unique:rooms,number'],
-            'price' => ['required', 'integer'],
+            'price' => ['required', 'integer', 'min:1', 'max:2147483647'],
             'description' => ['required', 'string', 'max:255'],
             'available' => ['required', 'integer', 'min:0', 'max:1'],
             'img_path' => ['nullable', 'string', 'max:255'],
