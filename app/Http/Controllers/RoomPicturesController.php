@@ -11,9 +11,9 @@ class RoomPicturesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($room_id)
     {
-        $roomPictures = Room_pictures::all();
+        $roomPictures = Room_pictures::where('room_id', $room_id)->get();
         return view('room_pictures.index', compact('roomPictures'));
     }
 

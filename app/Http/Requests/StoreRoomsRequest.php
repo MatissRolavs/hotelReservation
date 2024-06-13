@@ -9,9 +9,9 @@ class StoreRoomsRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreRoomsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'number' => ['required', 'integer', 'unique:rooms,number'],
+            'price' => ['required', 'integer'],
+            'description' => ['required', 'string', 'max:255'],
+            'available' => ['required', 'integer', 'min:0', 'max:1'],
+            'img_path' => ['nullable', 'string', 'max:255'],
         ];
     }
-}
+
+    }
+

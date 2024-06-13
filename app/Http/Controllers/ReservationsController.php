@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreReservationsRequest;
 use App\Http\Requests\UpdateReservationsRequest;
 use App\Models\Reservations;
-
+use App\Models\User;
+use App\Models\Rooms;
 class ReservationsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
+    {   $users = User::all();
+        $rooms = Rooms::all();
+        $reservations = Reservations::all();
+
+        return view('reservations.index', compact('reservations', 'rooms', 'users'));
     }
 
     /**
@@ -21,7 +25,7 @@ class ReservationsController extends Controller
      */
     public function create()
     {
-        //
+        return view('reservations.create');
     }
 
     /**
@@ -29,7 +33,33 @@ class ReservationsController extends Controller
      */
     public function store(StoreReservationsRequest $request)
     {
-        //
+        $request->validate([
+            'start_date' => 'date',
+            'end_date' => 'date|after:start_date',
+        ]);
+
+        $existingReservations = Reservations::where(function ($query) use ($request) {
+            $query->where('start_date', '<=', $request->input('start_date'))
+                ->where('end_date', '>=', $request->input('start_date'));
+        })
+        ->where(function ($query) use ($request) {
+            $query->where('start_date', '<=', $request->input('end_date'))
+                ->where('end_date', '>=', $request->input('end_date'));
+        })
+        ->get();
+
+        if ($existingReservations->isNotEmpty()) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'It is not possible to reserve a room in this time period.']);
+        }
+
+        $reservation = new Reservations();
+        $reservation->user_id = auth()->id();
+        $reservation->room_id = $request->input('room_id');
+        $reservation->start_date = $request->input('start_date');
+        $reservation->end_date = $request->input('end_date');
+        $reservation->save();
+
+        return redirect()->route('rooms.show', ['room' => $reservation->room_id]);
     }
 
     /**

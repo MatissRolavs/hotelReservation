@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer("price");
             $table->integer("available")->default(0);
             $table->string("description",255);
+            $table->string("img_path")->nullable();
             $table->timestamps();
         });
     }
